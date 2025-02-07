@@ -31,30 +31,31 @@ pip install -r requirements.txt
 
 This project consists of four Python scripts that collectively handle data scraping, processing, and output generation of every culture within the eHRAF World Cultures Database, which is maintained by the Human Relations Area Files (HRAF) at Yale University. While utilizing JavaScript may be faster, we used python for the ability to display the scraping process in a manner that allows the user to interact with the scraping and visually verify bugs and missed cultures. The total runtime to scrape all information from the database, including paragraph text, is around 11 hours: deityscraping.py, duplicatecheck.py, and concatenatedeities.py take roughly three hours to run, and deity_text.py takes approximately eight hours to run, but may vary depending on hardware.
 
-The file "qrySummary_eHRAF_WorldCultures_Jan2024" is manually downloaded from the HRAF website: "Cultures in eHRAF World Cultures", found [here](https://hraf.yale.edu/resources/reference/). However, I have also added two additional cultures that have been catalouged between the latest update of that file and 2/5/2025: Tarascans and Chiriguano. If you choose to download from the website directly instead of utilizing the file in the repository, make sure to update this information.
+The file "qrySummary_eHRAF_WorldCultures_Jan2025" is manually downloaded from the HRAF website: "Cultures in eHRAF World Cultures", found [here](https://hraf.yale.edu/resources/reference/). However, I have also added two additional cultures that have been catalouged between the latest update of that file and 2/5/2025: Tarascans and Chiriguano. If you choose to download from the website directly instead of utilizing the file in the repository, make sure to update this information.
 ## Files
 
 ### 1. `deityscraping.py` - **Obtaining paragraph information from eHRAF**
+[FROM WHAT I UNDERSTAND THIS SECTION USES THE DUPLICATE AND THE SCRAPPING PYTHON SCRIPTS - IF YES, CAN YOU UPDATE THE TITLE?]
 - **Purpose**: To scrape all relevant paragraphs given culture and subject search strings
-- **Key Functions**: search_ehraf: Initiates a program which automatically opens a Google Chrome tab, directs the search to the exact culture page based upon the subject filters, and selects and downloads all paragraph sources into a .csv file.
+- **Key Functions**: search_ehraf: Initiates a program which automatically opens a Google Chrome tab, directs the search to the exact culture page based upon the subject tags [ADD THEM HERE. Dora figured out a systematic way of selecting the tags, please update based on the Protocol], and selects and downloads all paragraph sources into a .csv file.
 - **Dependencies**: pandas, selenium, time, urllib, os
 
 **How to Run**: 
 
-1. Change the "csv_path" to wherever you downloaded the file qrySummary_eHRAF_WorldCultures_Jan2024.
+1. Change the "csv_path" to wherever you downloaded the file qrySummary_eHRAF_WorldCultures_Jan2025.
 2. Run the code using the following command. If you would like to visually see the process, please comment out "options.add_argument('--headless')" on line 26.
 ```
 python deityscraping.py
 ```
-3. Once the code finishes running, comment out options.add_argument('--headless'). Then, uncomment "#cultures = [ "O'odham","Mi'kmaq", "Chiricahua Apache"]" and comment out "cultures = df["EHRAF WORLD CULTURES NAME"] # Remove NaN values and duplicates". Then, for cultures O'odham and Mi'kmaq, you may have to help the macro navigate to the page displaying paragraphs. Alternatively, download these manually.
-4. Run the concatenatedeities.py and duplicatecheck.py, only after you do so should you navigate back here (if applicable)
-5. There are two cultures which the "download all" button does not work, even when pressed manually; this may be due to the quantity of these paragraphs. These are cultures Dogon and Ifugao; I've linked their pages [here](https://ehrafworldcultures.yale.edu/search/traditional/data?owcs=FA16&culture=Dogon&docs=28&sres=4365&q=cultures%3A%22Dogon%22+AND+subjects%3A%28%22spirits+and+gods%22+OR+%22gender+roles+and+issues%22+OR+%22mythology%22+OR+%22gender+status%22+OR+%22revelation+and+divination%22%29) and [here](https://ehrafworldcultures.yale.edu/search/traditional/data?owcs=OA19&culture=Ifugao&docs=22&sres=3610&q=cultures%3A%22Ifugao%22+AND+subjects%3A%28%22spirits+and+gods%22+OR+%22gender+roles+and+issues%22+OR+%22mythology%22+OR+%22gender+status%22+OR+%22revelation+and+divination%22%29), respectively. Instead, manually navigate to these pages and download these files in batches; I found that 2-3 seperate batches was sufficient.
+3. Once the code finishes running, comment out options.add_argument('--headless'). Then, uncomment "#cultures = [ "O'odham","Mi'kmaq", "Chiricahua Apache"]" and comment out "cultures = df["EHRAF WORLD CULTURES NAME"] # Remove NaN values and duplicates". Then, for cultures O'odham and Mi'kmaq, you may have to help the macro navigate to the page displaying paragraphs [WHY? CAN YOU FIGURE OUT A WAY SO THAT YOU DON'T HAVE TO DO THIS MANUALLY?]. Alternatively, download these manually.
+4. Run the concatenatedeities.py and duplicatecheck.py, only after you do so should you navigate back here (if applicable) [WHY ARE WE RUNNING THESE ALREADY? I THOUGHT IT WAS A LATER STAGE IN THE PROCESS]
+5. There are two cultures which the "download all" button does not work, even when pressed manually; this may be due to the quantity of these paragraphs [LETS FIGURE OUT WHY AND TRY TO MAKE IT AUTOMATIC]. These are cultures Dogon and Ifugao; I've linked their pages [here](https://ehrafworldcultures.yale.edu/search/traditional/data?owcs=FA16&culture=Dogon&docs=28&sres=4365&q=cultures%3A%22Dogon%22+AND+subjects%3A%28%22spirits+and+gods%22+OR+%22gender+roles+and+issues%22+OR+%22mythology%22+OR+%22gender+status%22+OR+%22revelation+and+divination%22%29) and [here](https://ehrafworldcultures.yale.edu/search/traditional/data?owcs=OA19&culture=Ifugao&docs=22&sres=3610&q=cultures%3A%22Ifugao%22+AND+subjects%3A%28%22spirits+and+gods%22+OR+%22gender+roles+and+issues%22+OR+%22mythology%22+OR+%22gender+status%22+OR+%22revelation+and+divination%22%29), respectively. Instead, manually navigate to these pages and download these files in batches; I found that 2-3 seperate batches was sufficient. [SINCE WE ARE INCREASING THE NUMBER OF TASKS, LET'S TRY TO HAVE A PROCESS THAT WORKS WITHOUT BUMPS]
 6. If there are any other cultures missing after running duplicatecheck.py, you may either put these missing cultures into a list and set cultures = [your list here] and run the code again, or you can simply download the files directly from the website. After downloading these extra files, place them into the folder_path and run concatenatedeities.py and duplicatecheck.py. After this, you should get the expected output.
 
 
 ### 2. `concatenatedeities.py` - **Merging all individual dataframes together**
 - **Purpose**: Takes every downloaded file from deityscraping.py and concatenates them into one master dataframe.
-- **Key Functions**: count_and_concatenate: Define the expected columns in each df, count number of files, concatenate all dataframes, remove any duplicate entries.
+- **Key Functions**: count_and_concatenate: Define the expected columns in each df, count number of files, concatenate all dataframes, remove any duplicate entries. [WHAT CONSTITUTES A DUPLICATE ENTRY? WHAT VARIABLES NEED TO BE PERFECT DUPLICATES FOR IT TO DELETE IT AND WHEN WOULD THIS HAPPEN?]
 - **Dependencies**: os, pandas.
 
 **How to Run**: 
@@ -66,11 +67,11 @@ python deityscraping.py
 python concatenatedeities.py
 ```
 
-### 3. `duplicatecheck.py` - **Verifying that all file were correctly downloaded**
-- **Purpose**: To verify the presence of all cultures, and to identify any missing cultures from the 
+### 3. `duplicatecheck.py` - **Verifying that all files were correctly downloaded** 
+- **Purpose**: To verify the presence of all cultures, and to identify any missing cultures from the [THE...? SO THIS CHECKS DUPLICATED CULTURES? AND CHECKS FOR CULTURE EXHAUSTIVITY? the name is a little missleading]
 - **Key Functions**: Find cultures in the eHRAF list of cultures.
 - **Dependencies**: pandas.
-
+  
 **How to Run**:
 
 1. Change csv_path and concatenated_csv_path to your paths, as well as missing_cultures_path to a path of your choice.
@@ -78,8 +79,8 @@ python concatenatedeities.py
 ```
 python duplicatecheck.py
 ```
-3. Examine the output of the code:
-- If you see '['Eastern Apache', 'Baluchi', 'Karakalpak', 'Hazara', 'Ghorbat', 'Tajiks']', you are done. All the files have been correctly concatenated. You may proceed to the next file. Eastern Apache is now coded as Chiricahua Apache. Given the subject strings, all the other cultures do not have a file relevant to the search strings.
+3. Examine the output of the code: [THIS NEED FURTHER EXPLANATION]
+- If you see '['Eastern Apache', 'Baluchi', 'Karakalpak', 'Hazara', 'Ghorbat', 'Tajiks']', you are done [WHY IS THIS?]. All the files have been correctly concatenated. You may proceed to the next file. Eastern Apache is now coded as Chiricahua Apache. Given the subject strings, all the other cultures do not have a file relevant to the search strings.
 - If you see cultures OTHER than these, refer back to deityscraping step 5 and 6.
 
 ### 4. `deity_text.py` - **Taking our master dataframe and scraping the text information**
@@ -95,5 +96,12 @@ python deity_text.py
 ```
 3. Come back in 8 hours (sleep, do other work, etc.)
 
-Note: if you attempt to change the updating structure of the code (df.to_csv), when you run the code keep an eye on the size of the new file for several minutes. If you append incorrectly, the file size will massively increase to ~2gb in just several minutes.
+Note: if you attempt to change the updating structure of the code (df.to_csv), when you run the code keep an eye on the size of the new file for several minutes. If you append incorrectly, the file size will massively increase to ~2gb in just several minutes. [SINCE THERE IS A LOT OF TEXT THE ENCODING MIGHT BE A WAY TO MAKE IT LIGHTER? WE ARE INCREASING THE NUMBER OF TAGS AND HENCE THE NUMBER OF PARAGRPAHS]
+
+GENERAL COMMENTS: 
+1) FOR EACH SECTION, INCLUDE A **RESULTING OUTPUT** SECTION, SO THAT THE READER KNOWS EXACTLY WHAT COMES OUT OF THAT STEP. SUCH AS HOW BIG IS THE FILE, WHAT DOES IT CONTAIN. WHAT DOES A LINE MEAN. HOW MANY CULTURES SHOULD IT BE, HOW MANY DUPLICATES IF ANY WERE REMOVED AND WHY. WE ALSO NEED A FINAL OUTPUT SECTION, AND WHAT THE CHARACTERISTICS OF THAT SHOULD BE. HOW SHOULD ONE CHECK THAT THE PROCESS WORKED? NUMBER OF SOCIETIES, VARIABLES, ETC. 
+2) TRY TO MAKE THE SCRIPTS WORK SMOOTHLY, WITHOUT MANUAL INTERVENTION; IDEALLY SOMEONE WITHOUT PYTHON EXPERIENCE CAN RUN THESE WITHOUT MAKING ANY CHANGES UNLESS THE ONLINE REPOSITORY CHANGES
+3) I THINK WE SHOULD HAVE ALL THE FILES FROM THE PROCESS IN THE BOX. DO YOU AGREE? COULD YOU RUN IT IN THAT FOLDER SO THAT YOU CAN REFERENCE FOLDERS SPECIFICALLY WITHIN IT? IN THAT WAY EVERYONE HAS ACCESS TO ALL THE FILES FROM ALL THE STEPS.
+4) WHAT OF THE ENCODING?
+5) WHAT ABOUT THE CULTURES THAT DON'T HAVE GENDERS? PROF. ROBINSON MENTION THIS, IS THERE A WAY THAT WE CAN FLAG THEM TO TAKE IT INTO ACCOUNT IN THE FUTURE?
 
